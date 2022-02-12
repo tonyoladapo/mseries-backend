@@ -1,0 +1,8 @@
+{
+  "name": "mseries-backend",
+  "version": "1.0.0",
+  "description": "Backend for mseries",
+  "main": "src/server.js",
+  "author": "Tony",
+  "license": "MIT"
+}
