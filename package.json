@@ -4,5 +4,13 @@
   "description": "Backend for mseries",
   "main": "src/server.js",
   "author": "Tony",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2"
+  }
 }
