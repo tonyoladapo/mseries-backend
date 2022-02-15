@@ -35,7 +35,7 @@ const discoverController = async (req, res, next) => {
 
     res.json(discoverShows);
   } catch (error) {
-    next(error);
+    console.log(error);
   }
 };
 
