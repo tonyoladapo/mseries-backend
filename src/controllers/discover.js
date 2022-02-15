@@ -4,14 +4,21 @@ const moment = require("moment");
 
 const discoverController = async (req, res, next) => {
   try {
-    const userGenres = JSON.parse(req.headers.genres);
-    const similarShowIds = JSON.parse(req.headers.similar_ids);
+    const userGenres = JSON.parse(req.query.genres);
+    const similarShowIds = JSON.parse(req.query.similar_ids);
+
+    const language = req.query.language;
+
+    tmdb.interceptors.request.use((config) => {
+      config.params.language = language;
+      return config;
+    });
 
     let discoverShows = [];
 
     discoverShows.push({
       listTitle: "Trending Now 🔥",
-      shows: await trending(),
+      shows: await trending(language),
     });
     discoverShows.push({
       listTitle: "Most Anticipated Shows🎬",
@@ -39,9 +46,13 @@ const discoverController = async (req, res, next) => {
   }
 };
 
-const trending = async () => {
+const trending = async (language) => {
   try {
-    const { data } = await tmdb.get("/trending/tv/day");
+    const { data } = await tmdb.get("/trending/tv/day", {
+      params: {
+        language,
+      },
+    });
     return data.results;
   } catch (error) {
     console.log(error);
