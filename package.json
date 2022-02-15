@@ -8,9 +8,14 @@
   "devDependencies": {
     "nodemon": "^2.0.15"
   },
+  "scripts": {
+    "dev": "nodemon .",
+    "start": "node ."
+  },
   "dependencies": {
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "moment": "^2.29.1"
   }
 }
