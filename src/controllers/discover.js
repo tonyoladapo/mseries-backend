@@ -1,4 +1,3 @@
-// const trakt = require("../apis/trakt");
 const tmdb = require("../apis/tmdb");
 const moment = require("moment");
 
@@ -27,15 +26,22 @@ const discoverController = async (req, res, next) => {
 
     await Promise.all(
       userGenres.map(async ({ id, name }) => {
-        discoverShows.push({ listTitle: name, shows: await basedOnGenre(id) });
+        const res = await basedOnGenre(id);
+        discoverShows.push({
+          listTitle: name,
+          shows: res.shows,
+          genre_id: res.genre_id,
+        });
       })
     );
 
     await Promise.all(
       similarShowIds.map(async ({ id, name }) => {
+        const res = await moreLikeThis(id);
         discoverShows.push({
           listTitle: name,
-          shows: await moreLikeThis(id),
+          shows: res.shows,
+          show_id: res.show_id,
         });
       })
     );
@@ -81,7 +87,7 @@ const basedOnGenre = async (genreId) => {
       },
     });
 
-    return data.results;
+    return { shows: data.results, genre_id: genreId };
   } catch (error) {
     console.log(error);
   }
@@ -90,7 +96,7 @@ const basedOnGenre = async (genreId) => {
 const moreLikeThis = async (id) => {
   try {
     const { data } = await tmdb.get(`/tv/${id}/recommendations`);
-    return data.results;
+    return { shows: data.results, show_id: id };
   } catch (error) {
     console.log(error);
   }
