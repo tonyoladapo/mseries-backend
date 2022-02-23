@@ -1,8 +1,8 @@
 const express = require("express");
-const { showDetailsController } = require("../controllers/show");
+const { unwatchedController } = require("../controllers/show");
 
 const router = express.Router();
 
-router.get("/details/:showId", showDetailsController);
+router.get("/unwatched/:showId", unwatchedController);
 
 module.exports = router;
