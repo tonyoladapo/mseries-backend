@@ -1,8 +1,5 @@
 const express = require("express");
-const {
-  showDetailsController,
-  unwatchedController,
-} = require("../controllers/show");
+const { unwatchedController } = require("../controllers/show");
 
 const router = express.Router();
 
