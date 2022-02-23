@@ -27,7 +27,7 @@ const unwatchedController = async (req, res) => {
       });
     });
 
-    res.json({ [showId]: unwatched });
+    res.json(unwatched);
   } catch (error) {
     console.log(error);
   }
