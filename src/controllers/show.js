@@ -33,38 +33,86 @@ const unwatchedController = async (req, res) => {
   }
 };
 
-// const showDetailsController = async (req, res) => {
-//   try {
-//     const language = req.query.language;
+const syncController = async (req, res) => {
+  try {
+    const language = req.query.language;
 
-//     tmdb.interceptors.request.use((config) => {
-//       config.params.language = language;
-//       return config;
-//     });
+    tmdb.interceptors.request.use((config) => {
+      config.params.language = language;
+      return config;
+    });
 
-//     const { showId } = req.params;
-//     const { data } = await tmdb.get(`/tv/${showId}`);
+    const shows = JSON.parse(req.query.shows);
 
-//     const promises = [];
+    const promises = [];
 
-//     data.seasons.forEach(async ({ season_number }) => {
-//       season_number > 0 &&
-//         promises.push(getSeasonEpisodes(showId, season_number));
-//     });
+    shows.map(async ({ id }) => {
+      promises.push(getShowDetails(id));
+    });
 
-//     const unwatched = {};
+    const response = await Promise.all(promises);
+    const test = response.map(async (show) => {
+      const showDetails = {
+        overview: show.overview,
+        origin_country: show.origin_country,
+        poster_path: show.poster_path,
+        name: show.name,
+        id: show.id,
+        original_name: show.original_name,
+        first_air_date: show.first_air_date,
+        popularity: show.popularity,
+        vote_average: show.vote_average,
+        vote_count: show.vote_count,
+        backdrop_path: show.backdrop_path,
+        genre_ids: show.genres.map(({ id }) => id),
+        original_language: show.original_language,
+      };
 
-//     await Promise.all(promises).then((response) => {
-//       response.forEach((season) => {
-//         unwatched[`season ${season.season_number}`] = season;
-//       });
-//     });
+      const seasonPromises = [];
 
-//     res.json({ ...data, unwatched });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+      show.seasons.forEach(async ({ season_number }) => {
+        season_number > 0 &&
+          seasonPromises.push(getSeasonEpisodes(show.id, season_number));
+      });
+
+      const unwatched = {};
+
+      await Promise.all(seasonPromises).then((response) => {
+        response.forEach((season) => {
+          unwatched[`season ${season.season_number}`] = season.episodes;
+        });
+      });
+
+      return {
+        showDetails,
+        unwatched: {
+          [show.id]: {
+            firstAirDate: show.first_air_date,
+            id: show.id,
+            name: show.name,
+            poster_path: show.poster_path,
+            seasons: unwatched,
+          },
+        },
+      };
+    });
+
+    await Promise.all(test).then((response) => {
+      res.json(response);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getShowDetails = async (showId) => {
+  try {
+    const { data } = await tmdb.get(`/tv/${showId}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const getSeasonEpisodes = async (showId, seasonNumber) => {
   try {
@@ -75,4 +123,4 @@ const getSeasonEpisodes = async (showId, seasonNumber) => {
   }
 };
 
-module.exports = { unwatchedController };
+module.exports = { unwatchedController, syncController };
