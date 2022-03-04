@@ -46,12 +46,12 @@ const syncController = async (req, res) => {
 
     const promises = [];
 
-    shows.map(async ({ id }) => {
+    shows.map(async (id) => {
       promises.push(getShowDetails(id));
     });
 
     const response = await Promise.all(promises);
-    const test = response.map(async (show) => {
+    const showIds = response.map(async (show) => {
       const showDetails = {
         overview: show.overview,
         origin_country: show.origin_country,
@@ -97,7 +97,7 @@ const syncController = async (req, res) => {
       };
     });
 
-    await Promise.all(test).then((response) => {
+    await Promise.all(showIds).then((response) => {
       res.json(response);
     });
   } catch (error) {
