@@ -1,4 +1,5 @@
 const tmdb = require("../apis/tmdb");
+const moment = require("moment");
 
 const unwatchedController = async (req, res) => {
   try {
@@ -19,11 +20,22 @@ const unwatchedController = async (req, res) => {
         promises.push(getSeasonEpisodes(showId, season_number));
     });
 
-    const unwatched = {};
+    const unwatched = {
+      seasons: {},
+    };
 
     await Promise.all(promises).then((response) => {
+      let numOfWatched = 0;
+      let numOfAiredEpisodes = 0;
+
       response.forEach((season) => {
-        unwatched[`season ${season.season_number}`] = season.episodes;
+        season.episodes.map((episode) => {
+          if (moment(episode.air_date).isBefore(moment())) numOfAiredEpisodes++;
+        });
+
+        unwatched.numOfAiredEpisodes = numOfAiredEpisodes;
+        unwatched.numOfWatchedEpisodes = numOfWatched;
+        unwatched.seasons[`season ${season.season_number}`] = season.episodes;
       });
     });
 
