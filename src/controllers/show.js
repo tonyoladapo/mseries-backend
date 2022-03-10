@@ -15,7 +15,7 @@ const unwatchedController = async (req, res) => {
 
     const promises = [];
 
-    data.seasons.forEach(async ({ season_number }) => {
+    data.seasons.forEach(({ season_number }) => {
       season_number > 0 &&
         promises.push(getSeasonEpisodes(showId, season_number));
     });
@@ -29,13 +29,23 @@ const unwatchedController = async (req, res) => {
       let numOfAiredEpisodes = 0;
 
       response.forEach((season) => {
-        season.episodes.map((episode) => {
+        const episodes = [];
+
+        season.episodes.map((_episode) => {
+          let episode = _episode;
+
+          delete episode.overview;
+          delete episode.crew;
+          delete episode.guest_stars;
+
+          episodes.push(episode);
+
           if (moment(episode.air_date).isBefore(moment())) numOfAiredEpisodes++;
         });
 
         unwatched.numOfAiredEpisodes = numOfAiredEpisodes;
         unwatched.numOfWatchedEpisodes = numOfWatched;
-        unwatched.seasons[`season ${season.season_number}`] = season.episodes;
+        unwatched.seasons[`season ${season.season_number}`] = episodes;
       });
     });
 
@@ -89,8 +99,15 @@ const syncController = async (req, res) => {
 
       const unwatched = {};
 
+      let numOfAiredEpisodes = 0;
+
       await Promise.all(seasonPromises).then((response) => {
         response.forEach((season) => {
+          season.episodes.map((episode) => {
+            if (moment(episode.air_date).isBefore(moment()))
+              numOfAiredEpisodes++;
+          });
+
           unwatched[`season ${season.season_number}`] = season.episodes;
         });
       });
@@ -104,6 +121,7 @@ const syncController = async (req, res) => {
             name: show.name,
             poster_path: show.poster_path,
             seasons: unwatched,
+            numOfAiredEpisodes,
           },
         },
       };
