@@ -1,4 +1,4 @@
-const { auth, firestore } = require("../../../firebase-config");
+const { auth, firestore } = require("../../firebase/config");
 const tmdb = require("../../apis/tmdb");
 
 const detailsController = async (req, res) => {

@@ -1,4 +1,4 @@
-const { auth, firestore } = require("../../../firebase-config");
+const { auth, firestore } = require("../../firebase/config");
 
 const progressController = async (req, res) => {
   try {
