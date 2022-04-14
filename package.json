@@ -16,6 +16,8 @@
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
+    "firebase": "^9.6.9",
+    "firebase-admin": "^10.0.2",
     "moment": "^2.29.1"
   }
 }
