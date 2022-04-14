@@ -2,3 +2,5 @@
 .env
 yarn.lock
 /node_modules
+firebase-config.js
+firebase-service-account-key.json
