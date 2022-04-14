@@ -1,4 +1,4 @@
-const { auth, firestore } = require("../../../firebase-config");
+const { auth, firestore } = require("../../firebase/config");
 const { getShowDetails, getUnwatched } = require("../../utils/showHelper");
 
 const addController = async (req, res) => {
