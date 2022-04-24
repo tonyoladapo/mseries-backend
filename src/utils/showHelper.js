@@ -75,4 +75,4 @@ const getSeasonEpisodes = async (showId, seasonNumber) => {
   }
 };
 
-module.exports = { getShowDetails, getUnwatched };
+module.exports = { getShowDetails, getUnwatched, getSeasonEpisodes };
