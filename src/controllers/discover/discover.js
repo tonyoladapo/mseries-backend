@@ -1,4 +1,4 @@
-const tmdb = require("../apis/tmdb");
+const tmdb = require("../../apis/tmdb");
 const moment = require("moment");
 
 const discoverController = async (req, res, next) => {
@@ -102,4 +102,4 @@ const moreLikeThis = async (id) => {
   }
 };
 
-module.exports = { discoverController };
+module.exports = discoverController;

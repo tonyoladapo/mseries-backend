@@ -24,8 +24,7 @@ const addController = async (req, res) => {
       "spoken_languages",
     ].forEach((key) => delete show[key]);
 
-    await userDataRef.collection("user_shows").doc(showId.toString()).set(show);
-    await userDataRef.collection("seasons").doc(showId.toString()).set({
+    const progress = {
       id: show.id,
       name: show.name,
       seasons,
@@ -33,9 +32,16 @@ const addController = async (req, res) => {
       firstAirDate: show.first_air_date,
       numOfAiredEpisodes,
       numOfWatchedEpisodes,
-    });
+      status: show.status,
+    };
 
-    res.send("success");
+    await userDataRef.collection("user_shows").doc(showId.toString()).set(show);
+    await userDataRef
+      .collection("seasons")
+      .doc(showId.toString())
+      .set(progress);
+
+    res.send(progress);
   } catch (error) {
     console.log(error);
   }
