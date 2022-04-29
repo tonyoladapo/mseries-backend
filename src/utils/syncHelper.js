@@ -14,11 +14,7 @@ const syncShow = async (showId, progress) => {
       "spoken_languages",
     ].forEach((key) => delete show[key]);
 
-    if (
-      status !== "Ended" ||
-      status !== "Canceled" ||
-      (status === "In Production" && show.status !== "In Production")
-    ) {
+    if (status !== "Ended" && status !== "Canceled") {
       const promises = [];
 
       show.seasons.map(({ season_number }) => {
@@ -40,7 +36,6 @@ const syncShow = async (showId, progress) => {
         let numberOfAiredEpisodesInSeason = 0;
 
         const seasonKey = `season ${season.season_number}`;
-
         seasons[seasonKey].episodes.map((_episode) => {
           episodesObj[_episode.episode_number] = _episode;
         });
@@ -64,11 +59,20 @@ const syncShow = async (showId, progress) => {
           }
         });
 
-        unwatched.numOfAiredEpisodes = numOfAiredEpisodes;
-        unwatched.numOfWatchedEpisodes = numOfWatchedEpisodes;
+        const checkCompleted = () => {
+          if (seasons[seasonKey]) {
+            return (
+              seasons[seasonKey].numberOfWatchedEpisodes ===
+              numberOfAiredEpisodesInSeason
+            );
+          }
+
+          return false;
+        };
+
         unwatched.seasons[seasonKey] = {
           episodes,
-          completed: seasons[seasonKey] ? seasons[seasonKey].completed : false,
+          completed: checkCompleted(),
           numberOfEpisodes: season.episodes.length,
           numberOfWatchedEpisodes: seasons[seasonKey]
             ? seasons[seasonKey].numberOfWatchedEpisodes
@@ -77,7 +81,10 @@ const syncShow = async (showId, progress) => {
         };
       });
 
-      return { show, progress: { ...unwatched, ...progress } };
+      unwatched.numOfAiredEpisodes = numOfAiredEpisodes;
+      unwatched.numOfWatchedEpisodes = numOfWatchedEpisodes;
+
+      return { show, progress: { ...progress, ...unwatched } };
     }
 
     return { show, progress };
