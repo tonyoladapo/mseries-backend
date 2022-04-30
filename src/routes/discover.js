@@ -3,6 +3,6 @@ const discoverController = require("../controllers/discover/discover");
 
 const router = express.Router();
 
-router.get("/", discoverController);
+router.post("/", discoverController);
 
 module.exports = router;

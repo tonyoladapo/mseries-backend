@@ -3,8 +3,7 @@ const moment = require("moment");
 
 const discoverController = async (req, res, next) => {
   try {
-    const userGenres = JSON.parse(req.query.genres);
-    const similarShowIds = JSON.parse(req.query.similar_ids);
+    const { genres, similarShows } = req.body;
 
     const language = req.query.language;
 
@@ -19,13 +18,14 @@ const discoverController = async (req, res, next) => {
       listTitle: "Trending Now 🔥",
       shows: await trending(language),
     });
+
     discoverShows.push({
       listTitle: "Most Anticipated Shows🎬",
       shows: await anticipated(),
     });
 
     await Promise.all(
-      userGenres.map(async ({ id, name }) => {
+      genres.map(async ({ id, name }) => {
         const res = await basedOnGenre(id);
         discoverShows.push({
           listTitle: name,
@@ -36,7 +36,7 @@ const discoverController = async (req, res, next) => {
     );
 
     await Promise.all(
-      similarShowIds.map(async ({ id, name }) => {
+      similarShows.map(async ({ id, name }) => {
         const res = await moreLikeThis(id);
         discoverShows.push({
           listTitle: name,
@@ -46,7 +46,7 @@ const discoverController = async (req, res, next) => {
       })
     );
 
-    res.json(discoverShows);
+    res.send(discoverShows);
   } catch (error) {
     console.log(error);
   }
