@@ -20,31 +20,33 @@ const discoverController = async (req, res, next) => {
     });
 
     discoverShows.push({
-      listTitle: "Most Anticipated Shows🎬",
+      listTitle: "Most Anticipated Shows 🎬",
       shows: await anticipated(),
     });
 
-    await Promise.all(
-      genres.map(async ({ id, name }) => {
-        const res = await basedOnGenre(id);
-        discoverShows.push({
-          listTitle: name,
-          shows: res.shows,
-          genre_id: res.genre_id,
-        });
-      })
-    );
+    genres.length > 0 &&
+      (await Promise.all(
+        genres.map(async ({ id, name }) => {
+          const res = await basedOnGenre(id);
+          discoverShows.push({
+            listTitle: name,
+            shows: res.shows,
+            genre_id: res.genre_id,
+          });
+        })
+      ));
 
-    await Promise.all(
-      similarShows.map(async ({ id, name }) => {
-        const res = await moreLikeThis(id);
-        discoverShows.push({
-          listTitle: name,
-          shows: res.shows,
-          show_id: res.show_id,
-        });
-      })
-    );
+    similarShows.length >= 5 &&
+      (await Promise.all(
+        similarShows.map(async ({ id, name }) => {
+          const res = await moreLikeThis(id);
+          discoverShows.push({
+            listTitle: name,
+            shows: res.shows,
+            show_id: res.show_id,
+          });
+        })
+      ));
 
     res.send(discoverShows);
   } catch (error) {
